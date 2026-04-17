@@ -1,0 +1,22 @@
+@model GLMS.Web.Models.ServiceRequest
+
+@{
+    ViewData["Title"] = "Service Request Details";
+}
+
+<h2>Service Request Details</h2>
+
+<div class="card">
+    <div class="card-body">
+        <p><strong>Contract ID:</strong> @Model.ContractId</p>
+        <p><strong>Description:</strong> @Model.Description</p>
+        <p><strong>Cost USD:</strong> @Model.CostUsd</p>
+        <p><strong>Exchange Rate Used:</strong> @Model.ExchangeRateUsed</p>
+        <p><strong>Cost ZAR:</strong> @Model.CostZar</p>
+        <p><strong>Status:</strong> @Model.Status</p>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a asp-action="Index" class="btn btn-secondary">Back</a>
+</div>

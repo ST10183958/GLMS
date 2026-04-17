@@ -1,0 +1,40 @@
+﻿@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="text-center">
+    <h1 class="display-5">Global Logistics Management System</h1>
+    <p class="lead">Welcome to the GLMS monolith prototype for TechMove Logistics.</p>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5>Clients</h5>
+                <p>Manage logistics clients and regional details.</p>
+                <a asp-controller="Clients" asp-action="Index" class="btn btn-primary">Open Clients</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5>Contracts</h5>
+                <p>Manage contracts, dates, status, and signed PDF agreements.</p>
+                <a asp-controller="Contracts" asp-action="Index" class="btn btn-primary">Open Contracts</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5>Service Requests</h5>
+                <p>Create requests and calculate ZAR cost from USD.</p>
+                <a asp-controller="ServiceRequests" asp-action="Index" class="btn btn-primary">Open Service Requests</a>
+            </div>
+        </div>
+    </div>
+</div>

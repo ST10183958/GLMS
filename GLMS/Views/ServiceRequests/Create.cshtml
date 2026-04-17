@@ -1,0 +1,74 @@
+@model GLMS.Web.ViewModels.ServiceRequestCreateViewModel
+
+@{
+    ViewData["Title"] = "Create Service Request";
+}
+
+<h2>Create Service Request</h2>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label asp-for="ContractId" class="form-label">Contract</label>
+        <select asp-for="ContractId" class="form-control" asp-items="Model.Contracts">
+            <option value="">-- Select Contract --</option>
+        </select>
+        <span asp-validation-for="ContractId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="CostUsd" class="form-label">Cost (USD)</label>
+        <input asp-for="CostUsd" class="form-control" id="usdAmount" />
+        <span asp-validation-for="CostUsd" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Exchange Rate (USD to ZAR)</label>
+        <input class="form-control" id="exchangeRate" readonly />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Calculated Cost (ZAR)</label>
+        <input class="form-control" id="zarAmount" readonly />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Status" class="form-label"></label>
+        <select asp-for="Status" class="form-control" asp-items="Html.GetEnumSelectList<ServiceRequestStatus>()"></select>
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Back</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        async function loadRate() {
+            try {
+                const response = await fetch('/ServiceRequests/GetExchangeRate');
+                const data = await response.json();
+                document.getElementById('exchangeRate').value = data.rate;
+                calculateZar();
+            } catch (error) {
+                console.error("Failed to fetch exchange rate.", error);
+            }
+        }
+
+        function calculateZar() {
+            const usd = parseFloat(document.getElementById('usdAmount').value) || 0;
+            const rate = parseFloat(document.getElementById('exchangeRate').value) || 0;
+            document.getElementById('zarAmount').value = (usd * rate).toFixed(2);
+        }
+
+        document.getElementById('usdAmount').addEventListener('input', calculateZar);
+        window.addEventListener('load', loadRate);
+    </script>
+}

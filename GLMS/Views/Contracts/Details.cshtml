@@ -1,0 +1,33 @@
+@model GLMS.Web.Models.Contract
+
+@{
+    ViewData["Title"] = "Contract Details";
+}
+
+<h2>Contract Details</h2>
+
+<div class="card">
+    <div class="card-body">
+        <p><strong>Client:</strong> @Model.Client?.Name</p>
+        <p><strong>Start Date:</strong> @Model.StartDate.ToShortDateString()</p>
+        <p><strong>End Date:</strong> @Model.EndDate.ToShortDateString()</p>
+        <p><strong>Status:</strong> @Model.Status</p>
+        <p><strong>Service Level:</strong> @Model.ServiceLevel</p>
+        <p>
+            <strong>Agreement:</strong>
+            @if (!string.IsNullOrWhiteSpace(Model.SignedAgreementFilePath))
+            {
+                <a asp-action="DownloadAgreement" asp-route-id="@Model.">Download PDF</a>
+            }
+            else
+            {
+                <span class="text-muted">No file uploaded</span>
+            }
+        </p>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a asp-action="Edit" asp-route-id="@Model.ContractId" class="btn btn-warning">Edit</a>
+    <a asp-action="Index" class="btn btn-secondary">Back</a>
+</div>

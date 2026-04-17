@@ -1,0 +1,134 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="obj\Debug\net10.0\.NETCoreApp,Version=v10.0.AssemblyAttributes.cs" />
+    <Compile Include="obj\Debug\net10.0\GLMS.AssemblyInfo.cs" />
+    <Compile Include="obj\Debug\net10.0\GLMS.GlobalUsings.g.cs" />
+    <Compile Include="obj\Debug\net10.0\GLMS.RazorAssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="obj\Debug\net10.0\GLMS.csproj.FileListAbsolute.txt" />
+    <Content Include="obj\Debug\net10.0\rbcswa.dswa.cache.json" />
+    <Content Include="obj\Debug\net10.0\rjimswa.dswa.cache.json" />
+    <Content Include="obj\Debug\net10.0\rjsmcshtml.dswa.cache.json" />
+    <Content Include="obj\Debug\net10.0\rjsmrazor.dswa.cache.json" />
+    <Content Include="obj\Debug\net10.0\rpswa.dswa.cache.json" />
+    <Content Include="obj\Debug\net10.0\scopedcss\bundle\GLMS.styles.css" />
+    <Content Include="obj\Debug\net10.0\scopedcss\projectbundle\GLMS.bundle.scp.css" />
+    <Content Include="obj\Debug\net10.0\scopedcss\Views\Shared\_Layout.cshtml.rz.scp.css" />
+    <Content Include="obj\Debug\net10.0\staticwebassets.build.endpoints.json" />
+    <Content Include="obj\Debug\net10.0\staticwebassets.build.json" />
+    <Content Include="obj\Debug\net10.0\staticwebassets.development.json" />
+    <Content Include="obj\Debug\net10.0\staticwebassets.removed.txt" />
+    <Content Include="obj\GLMS.csproj.nuget.dgspec.json" />
+    <Content Include="obj\project.assets.json" />
+    <Content Include="obj\project.packagespec.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="obj\Debug\net10.0\apphost" />
+    <None Include="obj\Debug\net10.0\compressed\20swdw5xqa-{0}-nvvlpmu67g-nvvlpmu67g.gz" />
+    <None Include="obj\Debug\net10.0\compressed\2hfks5kk3h-{0}-493y06b0oq-493y06b0oq.gz" />
+    <None Include="obj\Debug\net10.0\compressed\3s20rms0oc-{0}-bqjiyaj88i-bqjiyaj88i.gz" />
+    <None Include="obj\Debug\net10.0\compressed\469ssl6o7j-{0}-tdbxkamptv-tdbxkamptv.gz" />
+    <None Include="obj\Debug\net10.0\compressed\4b2fhqbzc6-{0}-khv3u5hwcm-khv3u5hwcm.gz" />
+    <None Include="obj\Debug\net10.0\compressed\4hntrfe6lf-{0}-06098lyss8-06098lyss8.gz" />
+    <None Include="obj\Debug\net10.0\compressed\52wevckg1c-{0}-ub07r2b239-ub07r2b239.gz" />
+    <None Include="obj\Debug\net10.0\compressed\5awjm6ujjj-{0}-rzd6atqjts-rzd6atqjts.gz" />
+    <None Include="obj\Debug\net10.0\compressed\69woqrv8fr-{0}-v0zj4ognzu-v0zj4ognzu.gz" />
+    <None Include="obj\Debug\net10.0\compressed\6ee6dj7jxj-{0}-vr1egmr9el-vr1egmr9el.gz" />
+    <None Include="obj\Debug\net10.0\compressed\6sv5tuj2ds-{0}-tbzccx1jxm-tbzccx1jxm.gz" />
+    <None Include="obj\Debug\net10.0\compressed\8rpd7c9tvq-{0}-0j3bgjxly4-0j3bgjxly4.gz" />
+    <None Include="obj\Debug\net10.0\compressed\8tbw67vyrx-{0}-iovd86k7lj-iovd86k7lj.gz" />
+    <None Include="obj\Debug\net10.0\compressed\a0s2j78ukz-{0}-c2jlpeoesf-c2jlpeoesf.gz" />
+    <None Include="obj\Debug\net10.0\compressed\a4x9i738l4-{0}-lugek5hnai-lugek5hnai.gz" />
+    <None Include="obj\Debug\net10.0\compressed\arj8x5s5gh-{0}-63fj8s7r0e-63fj8s7r0e.gz" />
+    <None Include="obj\Debug\net10.0\compressed\bpi5yndy2r-{0}-xzw0cte36n-xzw0cte36n.gz" />
+    <None Include="obj\Debug\net10.0\compressed\bu3z0h086c-{0}-notf2xhcfb-notf2xhcfb.gz" />
+    <None Include="obj\Debug\net10.0\compressed\c8aw48cbq9-{0}-cosvhxvwiu-cosvhxvwiu.gz" />
+    <None Include="obj\Debug\net10.0\compressed\cafwh0oflq-{0}-fsbi9cje9m-fsbi9cje9m.gz" />
+    <None Include="obj\Debug\net10.0\compressed\cdh6it3ka4-{0}-6cfz1n2cew-6cfz1n2cew.gz" />
+    <None Include="obj\Debug\net10.0\compressed\cf2a5058mc-{0}-37tfw0ft22-37tfw0ft22.gz" />
+    <None Include="obj\Debug\net10.0\compressed\d7dvzr6z4t-{0}-87fc7y1x7t-87fc7y1x7t.gz" />
+    <None Include="obj\Debug\net10.0\compressed\d7uafhgzx0-{0}-ag7o75518u-ag7o75518u.gz" />
+    <None Include="obj\Debug\net10.0\compressed\djafosv9u1-{0}-ft3s53vfgj-ft3s53vfgj.gz" />
+    <None Include="obj\Debug\net10.0\compressed\dut1gh63z4-{0}-k8d9w2qqmf-k8d9w2qqmf.gz" />
+    <None Include="obj\Debug\net10.0\compressed\ebji8fxsn3-{0}-erw9l3u2r3-erw9l3u2r3.gz" />
+    <None Include="obj\Debug\net10.0\compressed\ev66kdq7jl-{0}-ttgo8qnofa-ttgo8qnofa.gz" />
+    <None Include="obj\Debug\net10.0\compressed\fj9g7e3dzg-{0}-h1s4sie4z3-h1s4sie4z3.gz" />
+    <None Include="obj\Debug\net10.0\compressed\fq443om9k3-{0}-lcd1t2u6c8-lcd1t2u6c8.gz" />
+    <None Include="obj\Debug\net10.0\compressed\g0v6jojjru-{0}-jd9uben2k1-jd9uben2k1.gz" />
+    <None Include="obj\Debug\net10.0\compressed\gvc5xfu51m-{0}-jfsiqqwiad-jfsiqqwiad.gz" />
+    <None Include="obj\Debug\net10.0\compressed\hsshdpsyy9-{0}-6pdc2jztkx-6pdc2jztkx.gz" />
+    <None Include="obj\Debug\net10.0\compressed\itj64ldhl9-{0}-ausgxo2sd3-ausgxo2sd3.gz" />
+    <None Include="obj\Debug\net10.0\compressed\kzivvajjb2-{0}-kbrnm935zg-kbrnm935zg.gz" />
+    <None Include="obj\Debug\net10.0\compressed\lucp37page-{0}-tbzccx1jxm-tbzccx1jxm.gz" />
+    <None Include="obj\Debug\net10.0\compressed\mlchjgdviz-{0}-hrwsygsryq-hrwsygsryq.gz" />
+    <None Include="obj\Debug\net10.0\compressed\n0rhnwyn6p-{0}-0i3buxo5is-0i3buxo5is.gz" />
+    <None Include="obj\Debug\net10.0\compressed\nuvzvggia2-{0}-ilo7uva0vt-ilo7uva0vt.gz" />
+    <None Include="obj\Debug\net10.0\compressed\ooza7bh56f-{0}-47otxtyo56-47otxtyo56.gz" />
+    <None Include="obj\Debug\net10.0\compressed\os99e7efph-{0}-dxx9fxp4il-dxx9fxp4il.gz" />
+    <None Include="obj\Debug\net10.0\compressed\p92f6de1mn-{0}-fr7q2aak1r-fr7q2aak1r.gz" />
+    <None Include="obj\Debug\net10.0\compressed\q4egifbayj-{0}-b7pk76d08c-b7pk76d08c.gz" />
+    <None Include="obj\Debug\net10.0\compressed\qbhn8wm5uc-{0}-y7v9cxd14o-y7v9cxd14o.gz" />
+    <None Include="obj\Debug\net10.0\compressed\rapijftwny-{0}-jj8uyg4cgr-jj8uyg4cgr.gz" />
+    <None Include="obj\Debug\net10.0\compressed\rmxzzyyw0k-{0}-4v8eqarkd7-4v8eqarkd7.gz" />
+    <None Include="obj\Debug\net10.0\compressed\s6qpyomkrm-{0}-2z0ns9nrw6-2z0ns9nrw6.gz" />
+    <None Include="obj\Debug\net10.0\compressed\sqleyz8l6x-{0}-pj5nd1wqec-pj5nd1wqec.gz" />
+    <None Include="obj\Debug\net10.0\compressed\t73y10jn6r-{0}-lzl9nlhx6b-lzl9nlhx6b.gz" />
+    <None Include="obj\Debug\net10.0\compressed\teaqvl6q7i-{0}-ee0r1s7dh0-ee0r1s7dh0.gz" />
+    <None Include="obj\Debug\net10.0\compressed\thi5u8u0is-{0}-aexeepp0ev-aexeepp0ev.gz" />
+    <None Include="obj\Debug\net10.0\compressed\v64dezne1e-{0}-l3n5xuwxn8-l3n5xuwxn8.gz" />
+    <None Include="obj\Debug\net10.0\compressed\vy95b7sidg-{0}-muycvpuwrr-muycvpuwrr.gz" />
+    <None Include="obj\Debug\net10.0\compressed\vzdop8j63g-{0}-61n19gt1b8-61n19gt1b8.gz" />
+    <None Include="obj\Debug\net10.0\compressed\vzzwv90dna-{0}-r4e9w2rdcm-r4e9w2rdcm.gz" />
+    <None Include="obj\Debug\net10.0\compressed\w3g38f1n29-{0}-46ein0sx1k-46ein0sx1k.gz" />
+    <None Include="obj\Debug\net10.0\compressed\w7sg87y1y2-{0}-j5mq2jizvt-j5mq2jizvt.gz" />
+    <None Include="obj\Debug\net10.0\compressed\waqf91sro0-{0}-qlccset4i1-qlccset4i1.gz" />
+    <None Include="obj\Debug\net10.0\compressed\wfe132xuer-{0}-d7shbmvgxk-d7shbmvgxk.gz" />
+    <None Include="obj\Debug\net10.0\compressed\x801so3hnl-{0}-c2oey78nd0-c2oey78nd0.gz" />
+    <None Include="obj\Debug\net10.0\compressed\xfyc9iev9n-{0}-fvhpjtyr6v-fvhpjtyr6v.gz" />
+    <None Include="obj\Debug\net10.0\compressed\xorv1i8rrj-{0}-s35ty4nyc5-s35ty4nyc5.gz" />
+    <None Include="obj\Debug\net10.0\compressed\y08kpikbgr-{0}-pk9g2wxc8p-pk9g2wxc8p.gz" />
+    <None Include="obj\Debug\net10.0\compressed\ywg0hlfuc4-{0}-o1o13a6vjx-o1o13a6vjx.gz" />
+    <None Include="obj\Debug\net10.0\GLMS.AssemblyInfoInputs.cache" />
+    <None Include="obj\Debug\net10.0\GLMS.assets.cache" />
+    <None Include="obj\Debug\net10.0\GLMS.csproj.CoreCompileInputs.cache" />
+    <None Include="obj\Debug\net10.0\GLMS.dll" />
+    <None Include="obj\Debug\net10.0\GLMS.GeneratedMSBuildEditorConfig.editorconfig" />
+    <None Include="obj\Debug\net10.0\GLMS.genruntimeconfig.cache" />
+    <None Include="obj\Debug\net10.0\GLMS.MvcApplicationPartsAssemblyInfo.cache" />
+    <None Include="obj\Debug\net10.0\GLMS.pdb" />
+    <None Include="obj\Debug\net10.0\GLMS.RazorAssemblyInfo.cache" />
+    <None Include="obj\Debug\net10.0\refint\GLMS.dll" />
+    <None Include="obj\Debug\net10.0\ref\GLMS.dll" />
+    <None Include="obj\Debug\net10.0\staticwebassets.build.json.cache" />
+    <None Include="obj\Debug\net10.0\swae.build.ex.cache" />
+    <None Include="obj\GLMS.csproj.nuget.g.props" />
+    <None Include="obj\GLMS.csproj.nuget.g.targets" />
+    <None Include="obj\project.nuget.cache" />
+    <None Include="obj\rider.project.model.nuget.info" />
+    <None Include="obj\rider.project.restore.info" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="obj\Debug\net10.0\staticwebassets\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.6">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.6" />
+  </ItemGroup>
+
+</Project>
