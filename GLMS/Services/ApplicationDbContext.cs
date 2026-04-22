@@ -1,5 +1,6 @@
 using GLMS.Web.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GLMS.Web.Data
 {
@@ -29,6 +30,14 @@ namespace GLMS.Web.Data
                 .WithOne(sr => sr.Contract)
                 .HasForeignKey(sr => sr.ContractId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Contract>()
+                .Property(c => c.Status)
+                .HasConversion<string>();
+
+            builder.Entity<ServiceRequest>()
+                .Property(sr => sr.Status)
+                .HasConversion<string>();
         }
     }
 }

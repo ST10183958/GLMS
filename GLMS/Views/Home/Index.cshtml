@@ -1,40 +1,37 @@
 ﻿@{
-    ViewData["Title"] = "Home";
+    ViewData["Title"] = "Dashboard";
 }
 
-<div class="text-center">
-    <h1 class="display-5">Global Logistics Management System</h1>
-    <p class="lead">Welcome to the GLMS monolith prototype for TechMove Logistics.</p>
+<div class="glms-page-header">
+    <h1 class="glms-page-title">GLMS Dashboard</h1>
 </div>
 
-<div class="row mt-4">
-    <div class="col-md-4 mb-3">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h5>Clients</h5>
-                <p>Manage logistics clients and regional details.</p>
-                <a asp-controller="Clients" asp-action="Index" class="btn btn-primary">Open Clients</a>
-            </div>
-        </div>
+<div class="glms-stat-grid mb-4">
+    <div class="glms-stat-card">
+        <div class="glms-stat-label">Client Management</div>
+        <div class="glms-stat-value">Clients</div>
+        <p class="glms-card-muted mt-2">Manage logistics clients and their regional information.</p>
+        <a asp-controller="Clients" asp-action="Index" class="btn btn-primary">Open</a>
     </div>
 
-    <div class="col-md-4 mb-3">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h5>Contracts</h5>
-                <p>Manage contracts, dates, status, and signed PDF agreements.</p>
-                <a asp-controller="Contracts" asp-action="Index" class="btn btn-primary">Open Contracts</a>
-            </div>
-        </div>
+    <div class="glms-stat-card">
+        <div class="glms-stat-label">Contract Hub</div>
+        <div class="glms-stat-value">Contracts</div>
+        <p class="glms-card-muted mt-2">Track contract dates, status, SLA level, and signed agreements.</p>
+        <a asp-controller="Contracts" asp-action="Index" class="btn btn-primary">Open</a>
     </div>
 
-    <div class="col-md-4 mb-3">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h5>Service Requests</h5>
-                <p>Create requests and calculate ZAR cost from USD.</p>
-                <a asp-controller="ServiceRequests" asp-action="Index" class="btn btn-primary">Open Service Requests</a>
-            </div>
-        </div>
+    <div class="glms-stat-card">
+        <div class="glms-stat-label">Service Workflow</div>
+        <div class="glms-stat-value">Requests</div>
+        <p class="glms-card-muted mt-2">Create service requests and calculate cost in ZAR automatically.</p>
+        <a asp-controller="ServiceRequests" asp-action="Index" class="btn btn-primary">Open</a>
     </div>
+</div>
+
+<div class="glms-card">
+    <div class="glms-card-title">Welcome to TechMove GLMS</div>
+    <p class="glms-card-muted mb-0">
+        This enterprise portal centralizes client management, contract administration, and service request processing in a single monolithic ASP.NET Core MVC application.
+    </p>
 </div>

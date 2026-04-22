@@ -4,38 +4,60 @@
     ViewData["Title"] = "Service Requests";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>Service Requests</h2>
-    <a asp-action="Create" class="btn btn-success">Create New Service Request</a>
+<div class="glms-page-header">
+    <h2 class="glms-page-title">Service Requests</h2>
+    <a asp-action="Create" class="btn btn-primary">+ Create New Service Request</a>
 </div>
 
-<table class="table table-bordered table-striped">
-    <thead class="table-dark">
-    <tr>
-        <th>Contract ID</th>
-        <th>Description</th>
-        <th>Cost (USD)</th>
-        <th>Rate Used</th>
-        <th>Cost (ZAR)</th>
-        <th>Status</th>
-        <th style="width:180px;">Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td>@item.ContractId</td>
-            <td>@item.Description</td>
-            <td>@item.CostUsd</td>
-            <td>@item.ExchangeRateUsed</td>
-            <td>@item.CostZar</td>
-            <td>@item.Status</td>
-            <td>
-                    <a asp-action="Details" asp-route-id="@item.ServiceRequestId" class="btn btn-sm btn-info">Details</a>
-                    <a asp-action="Delete" asp-route-id="@item.ServiceRequestId" class="btn btn-sm btn-danger">Delete</a>
-            </td>
-        </tr>
-    }
-    </tbody>
-</table>
+@if (Model != null && Model.Any())
+{
+    <div class="glms-table-wrap">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Contract ID</th>
+                    <th>Description</th>
+                    <th>Cost (USD)</th>
+                    <th>Rate Used</th>
+                    <th>Cost (ZAR)</th>
+                    <th>Status</th>
+                    <th style="width:180px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    var statusClass = item.Status.ToString() switch
+                    {
+                        "Pending" => "badge-pending",
+                        "Approved" => "badge-approved",
+                        "Rejected" => "badge-rejected",
+                        "Completed" => "badge-completed",
+                        _ => "badge-pending"
+                    };
+
+                    <tr>
+                        <td><strong>@item.ContractId</strong></td>
+                        <td>@item.Description</td>
+                        <td>$@item.CostUsd</td>
+                        <td>@item.ExchangeRateUsed</td>
+                        <td>R @item.CostZar</td>
+                        <td><span class="badge-status @statusClass">@item.Status</span></td>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@item.ContractId" class="glms-link me-2">Details</a>
+                            <a asp-action="Delete" asp-route-id="@item.ContractId" class="glms-link">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="glms-card">
+        <div class="glms-card-title">No service requests found</div>
+        <p class="glms-card-muted mb-3">You have not created any service requests yet.</p>
+        <a asp-action="Create" class="btn btn-primary">Create First Request</a>
+    </div>
+}
