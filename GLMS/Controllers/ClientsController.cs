@@ -60,7 +60,7 @@ namespace GLMS.Web.Controllers
                 return View(client);
             }
 
-            _context.Add(client);
+            _context.Clients.Add(client);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
@@ -85,7 +85,7 @@ namespace GLMS.Web.Controllers
         // POST: Clients/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,ContactDetails,Region")] Client client)
+        public async Task<IActionResult> Edit(int id, [Bind("ClientId,Name,ContactDetails,Region")] Client client)
         {
             if (id != client.ClientId)
             {
@@ -124,6 +124,7 @@ namespace GLMS.Web.Controllers
             }
 
             var client = await _context.Clients
+                .Include(c => c.Contracts)
                 .FirstOrDefaultAsync(c => c.ClientId == id);
 
             if (client == null)

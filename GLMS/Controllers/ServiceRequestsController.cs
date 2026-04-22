@@ -33,6 +33,7 @@ namespace GLMS.Web.Controllers
             return View(serviceRequests);
         }
 
+
         public async Task<IActionResult> Create()
         {
             var vm = new ServiceRequestCreateViewModel
@@ -91,8 +92,47 @@ namespace GLMS.Web.Controllers
             _context.ServiceRequests.Add(entity);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
+
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var serviceRequest = await _context.ServiceRequests
+                .Include(sr => sr.Contract)
+                .FirstOrDefaultAsync(sr => sr.ContractId == id);
+
+            if (serviceRequest == null)
+            {
+                return NotFound();
+            }
+
+            return View(serviceRequest);
+        }
+
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var serviceRequest = await _context.ServiceRequests
+                .Include(sr => sr.Contract)
+                .FirstOrDefaultAsync(sr => sr.ContractId == id);
+
+            if (serviceRequest == null)
+            {
+                return NotFound();
+            }
+
+            return View(serviceRequest);
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> GetExchangeRate()
