@@ -16,13 +16,28 @@ namespace GLMS.Web.Services
         public async Task<decimal> GetUsdToZarRateAsync()
         {
             var baseUrl = _configuration["CurrencyApi:BaseUrl"];
+
+            if (string.IsNullOrWhiteSpace(baseUrl))
+            {
+                throw new InvalidOperationException("Currency API base URL is not configured.");
+            }
+
             var response = await _httpClient.GetAsync($"{baseUrl}USD");
             response.EnsureSuccessStatusCode();
 
             var json = await response.Content.ReadAsStringAsync();
             using var doc = JsonDocument.Parse(json);
 
-            var rates = doc.RootElement.GetProperty("rates");
+            var result = doc.RootElement.GetProperty("result").GetString();
+            if (result != "success")
+            {
+                var errorType = doc.RootElement.TryGetProperty("error-type", out var errorProp)
+                    ? errorProp.GetString()
+                    : "unknown";
+                throw new InvalidOperationException($"Currency API returned error: {errorType}");
+            }
+
+            var rates = doc.RootElement.GetProperty("conversion_rates");
             var zar = rates.GetProperty("ZAR").GetDecimal();
 
             return zar;
