@@ -2,44 +2,66 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Moq;
-using Xunit;
 
-namespace GLMS.Tests.Services
+namespace GLMS.Tests
 {
     public class FileServiceTests
     {
         [Fact]
-        public void ValidatePdf_ShouldThrow_WhenFileIsExe()
+        public async Task UploadExe_ShouldThrow()
         {
-            // Arrange
-            var envMock = new Mock<IWebHostEnvironment>();
-            var service = new FileService(envMock.Object);
+            var env = new Mock<IWebHostEnvironment>();
 
-            var fileMock = new Mock<IFormFile>();
-            fileMock.Setup(f => f.FileName).Returns("malware.exe");
-            fileMock.Setup(f => f.Length).Returns(100);
+            var service = new FileService(env.Object);
 
-            // Act + Assert
-            Assert.Throws<InvalidOperationException>(() =>
-                service.ValidatePdf(fileMock.Object));
+            var file = new Mock<IFormFile>();
+
+            file.Setup(f => f.FileName)
+                .Returns("virus.exe");
+
+            file.Setup(f => f.Length)
+                .Returns(100);
+
+            await Assert.ThrowsAsync<Exception>(() =>
+                service.SaveContractPdfAsync(file.Object));
         }
 
         [Fact]
-        public void ValidatePdf_ShouldPass_WhenFileIsPdf()
+        public async Task UploadPdfExe_ShouldThrow()
         {
-            // Arrange
-            var envMock = new Mock<IWebHostEnvironment>();
-            var service = new FileService(envMock.Object);
+            var env = new Mock<IWebHostEnvironment>();
 
-            var fileMock = new Mock<IFormFile>();
-            fileMock.Setup(f => f.FileName).Returns("contract.pdf");
-            fileMock.Setup(f => f.Length).Returns(100);
+            var service = new FileService(env.Object);
 
-            // Act
-            service.ValidatePdf(fileMock.Object);
+            var file = new Mock<IFormFile>();
 
-            // Assert
-            Assert.True(true);
+            file.Setup(f => f.FileName)
+                .Returns("contract.pdf.exe");
+
+            file.Setup(f => f.Length)
+                .Returns(100);
+
+            await Assert.ThrowsAsync<Exception>(() =>
+                service.SaveContractPdfAsync(file.Object));
+        }
+
+        [Fact]
+        public async Task UploadEmptyFile_ShouldThrow()
+        {
+            var env = new Mock<IWebHostEnvironment>();
+
+            var service = new FileService(env.Object);
+
+            var file = new Mock<IFormFile>();
+
+            file.Setup(f => f.FileName)
+                .Returns("contract.pdf");
+
+            file.Setup(f => f.Length)
+                .Returns(0);
+
+            await Assert.ThrowsAsync<Exception>(() =>
+                service.SaveContractPdfAsync(file.Object));
         }
     }
 }

@@ -12,8 +12,13 @@ namespace GLMS.Web.Services
     {
         public bool CanCreateServiceRequest(Contract contract)
         {
-            return contract.Status != ContractStatus.Expired &&
-                   contract.Status != ContractStatus.OnHold;
+            if (contract.Status == ContractStatus.Expired)
+                return false;
+
+            if (contract.Status == ContractStatus.OnHold)
+                return false;
+
+            return true;
         }
     }
 }

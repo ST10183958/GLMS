@@ -1,26 +1,56 @@
 ﻿using GLMS.Web.Services;
-using Microsoft.Extensions.Configuration;
-using Xunit;
 
-namespace GLMS.Tests.Services
+namespace GLMS.Tests
 {
     public class CurrencyServiceTests
     {
         [Fact]
-        public void ConvertUsdToZar_ShouldReturnCorrectValue()
+        public void ConvertUsdToZar_ShouldCalculateCorrectly()
         {
-            // Arrange
-            var config = new ConfigurationBuilder().Build();
-            var service = new CurrencyService(new HttpClient(), config);
+            var service = new CurrencyService(
+                new HttpClient(),
+                null!
+            );
 
-            decimal usd = 100m;
-            decimal rate = 18.50m;
+            var result = service.ConvertUsdToZar(100, 18);
 
-            // Act
-            var result = service.ConvertUsdToZar(usd, rate);
+            Assert.Equal(1800, result);
+        }
 
-            // Assert
-            Assert.Equal(1850.00m, result);
+        [Fact]
+        public void ConvertUsdToZar_ZeroAmount_ShouldThrow()
+        {
+            var service = new CurrencyService(
+                new HttpClient(),
+                null!
+            );
+
+            Assert.Throws<ArgumentException>(() =>
+                service.ConvertUsdToZar(0, 18));
+        }
+
+        [Fact]
+        public void ConvertUsdToZar_NegativeAmount_ShouldThrow()
+        {
+            var service = new CurrencyService(
+                new HttpClient(),
+                null!
+            );
+
+            Assert.Throws<ArgumentException>(() =>
+                service.ConvertUsdToZar(-10, 18));
+        }
+
+        [Fact]
+        public void ConvertUsdToZar_InvalidRate_ShouldThrow()
+        {
+            var service = new CurrencyService(
+                new HttpClient(),
+                null!
+            );
+
+            Assert.Throws<ArgumentException>(() =>
+                service.ConvertUsdToZar(100, 0));
         }
     }
 }

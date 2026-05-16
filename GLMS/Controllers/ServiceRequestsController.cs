@@ -26,26 +26,18 @@ namespace GLMS.Web.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var serviceRequests = await _context.ServiceRequests
-                .Include(sr => sr.Contract)
+            var requests = await _context.ServiceRequests
+                .Include(s => s.Contract)
                 .ToListAsync();
 
-            return View(serviceRequests);
+            return View(requests);
         }
-
 
         public async Task<IActionResult> Create()
         {
             var vm = new ServiceRequestCreateViewModel
             {
-                Contracts = await _context.Contracts
-                    .Include(c => c.Client)
-                    .Select(c => new SelectListItem
-                    {
-                        Value = c.ContractId.ToString(),
-                        Text = $"{c.Client!.Name} - Contract #{c.ContractId} ({c.Status})"
-                    })
-                    .ToListAsync()
+                Contracts = await LoadContracts()
             };
 
             return View(vm);
@@ -55,31 +47,53 @@ namespace GLMS.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ServiceRequestCreateViewModel vm)
         {
+            if (vm.CostUsd <= 0)
+            {
+                ModelState.AddModelError("CostUsd",
+                    "USD amount must be greater than zero.");
+            }
+
             var contract = await _context.Contracts.FindAsync(vm.ContractId);
 
             if (contract == null)
-                ModelState.AddModelError("ContractId", "Selected contract was not found.");
+            {
+                ModelState.AddModelError("ContractId",
+                    "Selected contract not found.");
+            }
             else if (!_contractRulesService.CanCreateServiceRequest(contract))
-                ModelState.AddModelError("ContractId", "Cannot create a service request for an Expired or On Hold contract.");
+            {
+                ModelState.AddModelError("ContractId",
+                    "Cannot create service request for Expired or On Hold contracts.");
+            }
 
             if (!ModelState.IsValid)
             {
-                vm.Contracts = await _context.Contracts
-                    .Include(c => c.Client)
-                    .Select(c => new SelectListItem
-                    {
-                        Value = c.ContractId.ToString(),
-                        Text = $"{c.Client!.Name} - Contract #{c.ContractId} ({c.Status})"
-                    })
-                    .ToListAsync();
+                vm.Contracts = await LoadContracts();
+                return View(vm);
+            }
+
+            decimal rate;
+            decimal costZar;
+
+            try
+            {
+                rate = await _currencyService.GetUsdToZarRateAsync();
+
+                costZar = _currencyService.ConvertUsdToZar(
+                    vm.CostUsd,
+                    rate
+                );
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+
+                vm.Contracts = await LoadContracts();
 
                 return View(vm);
             }
 
-            var rate = await _currencyService.GetUsdToZarRateAsync();
-            var costZar = _currencyService.ConvertUsdToZar(vm.CostUsd, rate);
-
-            var entity = new ServiceRequest
+            var request = new ServiceRequest
             {
                 ContractId = vm.ContractId,
                 Description = vm.Description,
@@ -89,56 +103,23 @@ namespace GLMS.Web.Controllers
                 Status = vm.Status
             };
 
-            _context.ServiceRequests.Add(entity);
+            _context.ServiceRequests.Add(request);
+
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Details(int? id)
+        private async Task<List<SelectListItem>> LoadContracts()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var serviceRequest = await _context.ServiceRequests
-                .Include(sr => sr.Contract)
-                .FirstOrDefaultAsync(sr => sr.ContractId == id);
-
-            if (serviceRequest == null)
-            {
-                return NotFound();
-            }
-
-            return View(serviceRequest);
-        }
-
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var serviceRequest = await _context.ServiceRequests
-                .Include(sr => sr.Contract)
-                .FirstOrDefaultAsync(sr => sr.ContractId == id);
-
-            if (serviceRequest == null)
-            {
-                return NotFound();
-            }
-
-            return View(serviceRequest);
-        }
-
-
-        [HttpGet]
-        public async Task<IActionResult> GetExchangeRate()
-        {
-            var rate = await _currencyService.GetUsdToZarRateAsync();
-            return Json(new { rate });
+            return await _context.Contracts
+                .Include(c => c.Client)
+                .Select(c => new SelectListItem
+                {
+                    Value = c.ContractId.ToString(),
+                    Text = $"{c.Client.Name} - Contract #{c.ContractId}"
+                })
+                .ToListAsync();
         }
     }
 }
