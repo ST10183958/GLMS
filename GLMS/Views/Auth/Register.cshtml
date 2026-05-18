@@ -1,0 +1,202 @@
+@model GLMS.Web.ViewModels.RegisterViewModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1" />
+
+    <title>GLMS Register</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet" />
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f0f2f5;
+            font-family: Arial, Helvetica, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .main-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .left-panel {
+            flex: 1;
+            background: linear-gradient(135deg, #00c853, #1b5e20);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 80px;
+        }
+
+        .left-panel h1 {
+            font-size: 56px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .left-panel p {
+            font-size: 22px;
+            line-height: 1.7;
+            max-width: 600px;
+        }
+
+        .right-panel {
+            width: 520px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .register-card {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .register-card h2 {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 25px;
+            color: #00c853;
+        }
+
+        .btn-register {
+            background: #00c853;
+            border: none;
+            font-weight: bold;
+            padding: 12px;
+        }
+
+        .btn-register:hover {
+            background: #00b248;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .login-link a {
+            text-decoration: none;
+            font-weight: bold;
+            color: #00c853;
+        }
+
+        .glms-logo {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+
+    <div class="left-panel">
+
+        <div class="glms-logo">
+            GLMS
+        </div>
+
+        <h1>
+            Join The Future
+            of Logistics
+        </h1>
+
+        <p>
+            Build smarter freight workflows,
+            automate international logistics,
+            and manage contracts globally
+            with enterprise-grade infrastructure.
+        </p>
+
+    </div>
+
+    <div class="right-panel">
+
+        <div class="register-card">
+
+            <h2>Create Account</h2>
+
+            <form asp-action="Register"
+                  method="post">
+
+                <div asp-validation-summary="All"
+                     class="text-danger mb-3">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        Username
+                    </label>
+
+                    <input asp-for="Username"
+                           class="form-control form-control-lg" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        Email
+                    </label>
+
+                    <input asp-for="Email"
+                           class="form-control form-control-lg" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        Password
+                    </label>
+
+                    <input asp-for="Password"
+                           type="password"
+                           class="form-control form-control-lg" />
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">
+                        Confirm Password
+                    </label>
+
+                    <input asp-for="ConfirmPassword"
+                           type="password"
+                           class="form-control form-control-lg" />
+                </div>
+
+                <button type="submit"
+                        class="btn btn-success btn-register w-100">
+                    Register
+                </button>
+
+            </form>
+
+            <div class="login-link">
+                <a asp-action="Login">
+                    Already have an account?
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<partial name="_ValidationScriptsPartial" />
+
+</body>
+</html>

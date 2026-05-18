@@ -1,100 +1,73 @@
-﻿using GLMS.Web.Models;
-using GLMS.Web.Services;
+﻿using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
+using GLMS.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GLMS.Web.Controllers
 {
     public class ClientsController : Controller
     {
-        private readonly IClientsApiService _apiService;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public ClientsController(IClientsApiService apiService)
+        public ClientsController(IHttpClientFactory httpClientFactory)
         {
-            _apiService = apiService;
+            _httpClientFactory = httpClientFactory;
         }
 
-        // GET: Clients
         public async Task<IActionResult> Index()
         {
-            var clients = await _apiService.GetClientsAsync();
+            var token = HttpContext.Session.GetString("JWToken");
+
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var client = _httpClientFactory.CreateClient("GLMSApi");
+
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.GetAsync("api/clients");
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            var clients = JsonSerializer.Deserialize<List<Client>>(
+                json,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
 
             return View(clients);
         }
 
-        // GET: Clients/Details/5
-        public async Task<IActionResult> Details(int id)
-        {
-            var client = await _apiService.GetClientByIdAsync(id);
-
-            if (client == null)
-                return NotFound();
-
-            return View(client);
-        }
-
-        // GET: Clients/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Clients/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Client client)
+        public async Task<IActionResult> Create(Client model)
         {
-            if (!ModelState.IsValid)
-                return View(client);
+            var token = HttpContext.Session.GetString("JWToken");
 
-            await _apiService.CreateClientAsync(client);
+            var client = _httpClientFactory.CreateClient("GLMSApi");
 
-            return RedirectToAction(nameof(Index));
-        }
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
 
-        // GET: Clients/Edit/5
-        public async Task<IActionResult> Edit(int id)
-        {
-            var client = await _apiService.GetClientByIdAsync(id);
+            var json = JsonSerializer.Serialize(model);
 
-            if (client == null)
-                return NotFound();
+            var content = new StringContent(
+                json,
+                Encoding.UTF8,
+                "application/json"
+            );
 
-            return View(client);
-        }
-
-        // POST: Clients/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Client client)
-        {
-            if (id != client.ClientId)
-                return NotFound();
-
-            if (!ModelState.IsValid)
-                return View(client);
-
-            await _apiService.UpdateClientAsync(id, client);
-
-            return RedirectToAction(nameof(Index));
-        }
-
-        // GET: Clients/Delete/5
-        public async Task<IActionResult> Delete(int id)
-        {
-            var client = await _apiService.GetClientByIdAsync(id);
-
-            if (client == null)
-                return NotFound();
-
-            return View(client);
-        }
-
-        // POST: Clients/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            await _apiService.DeleteClientAsync(id);
+            await client.PostAsync("api/clients", content);
 
             return RedirectToAction(nameof(Index));
         }

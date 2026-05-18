@@ -1,50 +1,221 @@
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
 using GLMS.Web.Models;
-using GLMS.Web.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace GLMS.Web.Controllers;
-
-
-public class ContractsController : Controller
+namespace GLMS.Web.Controllers
 {
-    private readonly IContractsApiService _api;
-
-    public ContractsController(
-        IContractsApiService api)
+    public class ContractsController : Controller
     {
-        _api = api;
-    }
+        private readonly IHttpClientFactory _httpClientFactory;
 
-    public async Task<IActionResult> Index()
-    {
-        var contracts =
-            await _api.GetContractsAsync();
+        public ContractsController(IHttpClientFactory httpClientFactory)
+        {
+            _httpClientFactory = httpClientFactory;
+        }
 
-        return View(contracts);
-    }
+        // =========================
+        // INDEX
+        // =========================
 
-    public IActionResult Create()
-    {
-        return View();
-    }
+        public async Task<IActionResult> Index()
+        {
+            var token = HttpContext.Session.GetString("JWToken");
 
-    [HttpPost]
-    public async Task<IActionResult> Create(
-        Contract contract)
-    {
-        if (!ModelState.IsValid)
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var client = _httpClientFactory.CreateClient("GLMSApi");
+
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.GetAsync("api/contracts");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return View(new List<Contract>());
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            var contracts = JsonSerializer.Deserialize<List<Contract>>(
+                json,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+            return View(contracts);
+        }
+
+        // =========================
+        // DETAILS
+        // =========================
+
+        public async Task<IActionResult> Details(int id)
+        {
+            var token = HttpContext.Session.GetString("JWToken");
+
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var client = _httpClientFactory.CreateClient("GLMSApi");
+
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.GetAsync($"api/contracts/{id}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return NotFound();
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            var contract = JsonSerializer.Deserialize<Contract>(
+                json,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
             return View(contract);
+        }
 
-        await _api.CreateContractAsync(contract);
+        // =========================
+        // CREATE GET
+        // =========================
 
-        return RedirectToAction(nameof(Index));
-    }
+        public IActionResult Create()
+        {
+            var token = HttpContext.Session.GetString("JWToken");
 
-    public async Task<IActionResult> Delete(int id)
-    {
-        await _api.DeleteContractAsync(id);
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                return RedirectToAction("Login", "Auth");
+            }
 
-        return RedirectToAction(nameof(Index));
+            return View();
+        }
+
+        // =========================
+        // CREATE POST
+        // =========================
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Contract contract)
+        {
+            var token = HttpContext.Session.GetString("JWToken");
+
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(contract);
+            }
+
+            var client = _httpClientFactory.CreateClient("GLMSApi");
+
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            var json = JsonSerializer.Serialize(contract);
+
+            var content = new StringContent(
+                json,
+                Encoding.UTF8,
+                "application/json"
+            );
+
+            var response = await client.PostAsync(
+                "api/contracts",
+                content
+            );
+
+            if (!response.IsSuccessStatusCode)
+            {
+                ModelState.AddModelError(
+                    "",
+                    "Failed to create contract."
+                );
+
+                return View(contract);
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // =========================
+        // DELETE GET
+        // =========================
+
+        public async Task<IActionResult> Delete(int id)
+        {
+            var token = HttpContext.Session.GetString("JWToken");
+
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var client = _httpClientFactory.CreateClient("GLMSApi");
+
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.GetAsync($"api/contracts/{id}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return NotFound();
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            var contract = JsonSerializer.Deserialize<Contract>(
+                json,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+            return View(contract);
+        }
+
+        // =========================
+        // DELETE POST
+        // =========================
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int contractId)
+        {
+            var token = HttpContext.Session.GetString("JWToken");
+
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var client = _httpClientFactory.CreateClient("GLMSApi");
+
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            await client.DeleteAsync($"api/contracts/{contractId}");
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

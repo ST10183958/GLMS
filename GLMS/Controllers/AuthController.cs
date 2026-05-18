@@ -1,60 +1,211 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Text;
-using GLMS.Api.Models;
+using System.Text.Json;
+using GLMS.Web.ViewModels;
+using Microsoft.AspNetCore.Mvc;
 
-namespace GLMS.Api.Controllers;
-
-[ApiController]
-[Route("api/auth")]
-public class AuthController : ControllerBase
+namespace GLMS.Web.Controllers
 {
-    private readonly IConfiguration _config;
-
-    public AuthController(IConfiguration config)
+    public class AuthController : Controller
     {
-        _config = config;
-    }
+        private readonly IHttpClientFactory _httpClientFactory;
 
-    [HttpPost("login")]
-    public IActionResult Login(LoginModel model)
-    {
-        if (model.Username != "admin" ||
-            model.Password != "password")
+        public AuthController(IHttpClientFactory httpClientFactory)
         {
-            return Unauthorized();
+            _httpClientFactory = httpClientFactory;
         }
 
-        var claims = new[]
+        // =========================
+        // LOGIN
+        // =========================
+
+        [HttpGet]
+        public IActionResult Login()
         {
-            new Claim(
-                ClaimTypes.Name,
-                model.Username)
-        };
+            return View();
+        }
 
-        var key = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(
-                _config["Jwt:Key"]));
-
-        var creds =
-            new SigningCredentials(
-                key,
-                SecurityAlgorithms.HmacSha256);
-
-        var token = new JwtSecurityToken(
-            issuer: _config["Jwt:Issuer"],
-            audience: _config["Jwt:Audience"],
-            claims: claims,
-            expires: DateTime.Now.AddHours(2),
-            signingCredentials: creds);
-
-        return Ok(new
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginViewModel vm)
         {
-            token =
-                new JwtSecurityTokenHandler()
-                    .WriteToken(token)
-        });
+            if (!ModelState.IsValid)
+            {
+                return View(vm);
+            }
+
+            try
+            {
+                var client = _httpClientFactory.CreateClient("GLMSApi");
+
+                var payload = new
+                {
+                    username = vm.Username,
+                    password = vm.Password
+                };
+
+                var json = JsonSerializer.Serialize(payload);
+
+                var content = new StringContent(
+                    json,
+                    Encoding.UTF8,
+                    "application/json"
+                );
+
+                var response = await client.PostAsync(
+                    "api/auth/login",
+                    content
+                );
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    ModelState.AddModelError(
+                        "",
+                        "Invalid username or password."
+                    );
+
+                    return View(vm);
+                }
+
+                var responseContent =
+                    await response.Content.ReadAsStringAsync();
+
+                using var doc =
+                    JsonDocument.Parse(responseContent);
+
+                var token = doc.RootElement
+                    .GetProperty("token")
+                    .GetString();
+
+                if (string.IsNullOrWhiteSpace(token))
+                {
+                    ModelState.AddModelError(
+                        "",
+                        "Authentication token was not returned."
+                    );
+
+                    return View(vm);
+                }
+
+                // SAVE JWT TOKEN TO SESSION
+                HttpContext.Session.SetString(
+                    "JWToken",
+                    token
+                );
+
+                HttpContext.Session.SetString(
+                    "Username",
+                    vm.Username
+                );
+
+                return RedirectToAction(
+                    "Index",
+                    "Home"
+                );
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(
+                    "",
+                    $"Authentication server error: {ex.Message}"
+                );
+
+                return View(vm);
+            }
+        }
+
+        // =========================
+        // REGISTER
+        // =========================
+
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegisterViewModel vm)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(vm);
+            }
+
+            try
+            {
+                var client = _httpClientFactory.CreateClient("GLMSApi");
+
+                var payload = new
+                {
+                    username = vm.Username,
+                    email = vm.Email,
+                    password = vm.Password
+                };
+
+                var json = JsonSerializer.Serialize(payload);
+
+                var content = new StringContent(
+                    json,
+                    Encoding.UTF8,
+                    "application/json"
+                );
+
+                var response = await client.PostAsync(
+                    "api/auth/register",
+                    content
+                );
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var error =
+                        await response.Content.ReadAsStringAsync();
+
+                    ModelState.AddModelError(
+                        "",
+                        $"Registration failed: {error}"
+                    );
+
+                    return View(vm);
+                }
+
+                TempData["SuccessMessage"] =
+                    "Registration successful. Please login.";
+
+                return RedirectToAction("Login");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(
+                    "",
+                    $"Registration server error: {ex.Message}"
+                );
+
+                return View(vm);
+            }
+        }
+
+        // =========================
+        // LOGOUT
+        // =========================
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+
+            return RedirectToAction(
+                "Login",
+                "Auth"
+            );
+        }
+
+        // =========================
+        // ACCESS DENIED
+        // =========================
+
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
     }
 }

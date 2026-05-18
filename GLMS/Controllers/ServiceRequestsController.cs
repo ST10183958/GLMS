@@ -1,154 +1,163 @@
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
 using GLMS.Web.Models;
-using GLMS.Web.Services;
-using GLMS.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace GLMS.Web.Controllers
 {
     public class ServiceRequestsController : Controller
     {
-        private readonly IServiceRequestsApiService _serviceRequestApi;
-        private readonly IContractsApiService _contractsApi;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public ServiceRequestsController(
-            IServiceRequestsApiService serviceRequestApi,
-            IContractsApiService contractsApi)
+        public ServiceRequestsController(IHttpClientFactory httpClientFactory)
         {
-            _serviceRequestApi = serviceRequestApi;
-            _contractsApi = contractsApi;
+            _httpClientFactory = httpClientFactory;
         }
 
-        // GET: ServiceRequests
+        // =========================
+        // INDEX
+        // =========================
+
         public async Task<IActionResult> Index()
         {
+            var token = HttpContext.Session.GetString("JWToken");
+
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var client = _httpClientFactory.CreateClient("GLMSApi");
+
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.GetAsync(
+                "api/servicerequests"
+            );
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return View(new List<ServiceRequest>());
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+
             var requests =
-                await _serviceRequestApi.GetServiceRequestsAsync();
+                JsonSerializer.Deserialize<List<ServiceRequest>>(
+                    json,
+                    new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
 
             return View(requests);
         }
 
-        // GET: ServiceRequests/Details/5
-        public async Task<IActionResult> Details(int id)
+        // =========================
+        // CREATE GET
+        // =========================
+
+        public IActionResult Create()
         {
-            var request =
-                await _serviceRequestApi
-                    .GetServiceRequestByIdAsync(id);
-
-            if (request == null)
-                return NotFound();
-
-            return View(request);
+            return View();
         }
 
-        // GET: ServiceRequests/Create
-        public async Task<IActionResult> Create()
-        {
-            var contracts =
-                await _contractsApi.GetContractsAsync();
+        // =========================
+        // CREATE POST
+        // =========================
 
-            var vm = new ServiceRequestCreateViewModel
-            {
-                Contracts = contracts.Select(c =>
-                    new SelectListItem
-                    {
-                        Value = c.ContractId.ToString(),
-                        Text =
-                            $"Contract #{c.ContractId}"
-                    }).ToList()
-            };
-
-            return View(vm);
-        }
-
-        // POST: ServiceRequests/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
-            ServiceRequestCreateViewModel vm)
+            ServiceRequest request
+        )
         {
-            if (!ModelState.IsValid)
+            var token = HttpContext.Session.GetString("JWToken");
+
+            var client = _httpClientFactory.CreateClient("GLMSApi");
+
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            var json = JsonSerializer.Serialize(request);
+
+            var content = new StringContent(
+                json,
+                Encoding.UTF8,
+                "application/json"
+            );
+
+            var response = await client.PostAsync(
+                "api/servicerequests",
+                content
+            );
+
+            if (!response.IsSuccessStatusCode)
             {
-                var contracts =
-                    await _contractsApi.GetContractsAsync();
+                ModelState.AddModelError(
+                    "",
+                    "Failed to create service request."
+                );
 
-                vm.Contracts = contracts.Select(c =>
-                    new SelectListItem
-                    {
-                        Value = c.ContractId.ToString(),
-                        Text =
-                            $"Contract #{c.ContractId}"
-                    }).ToList();
-
-                return View(vm);
+                return View(request);
             }
 
-            var request = new ServiceRequest
-            {
-                ContractId = vm.ContractId,
-                Description = vm.Description,
-                CostUsd = vm.CostUsd,
-                Status = vm.Status
-            };
-
-            await _serviceRequestApi
-                .CreateServiceRequestAsync(request);
-
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: ServiceRequests/Edit/5
-        public async Task<IActionResult> Edit(int id)
-        {
-            var request =
-                await _serviceRequestApi
-                    .GetServiceRequestByIdAsync(id);
+        // =========================
+        // DELETE
+        // =========================
 
-            if (request == null)
-                return NotFound();
-
-            return View(request);
-        }
-
-        // POST: ServiceRequests/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(
-            int id,
-            ServiceRequest request)
-        {
-            if (id != request.ServiceRequestId)
-                return NotFound();
-
-            if (!ModelState.IsValid)
-                return View(request);
-
-            await _serviceRequestApi
-                .UpdateServiceRequestAsync(id, request);
-
-            return RedirectToAction(nameof(Index));
-        }
-
-        // GET: ServiceRequests/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
-            var request =
-                await _serviceRequestApi
-                    .GetServiceRequestByIdAsync(id);
+            var token = HttpContext.Session.GetString("JWToken");
 
-            if (request == null)
+            var client = _httpClientFactory.CreateClient("GLMSApi");
+
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.GetAsync(
+                $"api/servicerequests/{id}"
+            );
+
+            if (!response.IsSuccessStatusCode)
+            {
                 return NotFound();
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            var request =
+                JsonSerializer.Deserialize<ServiceRequest>(
+                    json,
+                    new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
 
             return View(request);
         }
 
-        // POST: ServiceRequests/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(
+            int serviceRequestId
+        )
         {
-            await _serviceRequestApi
-                .DeleteServiceRequestAsync(id);
+            var token = HttpContext.Session.GetString("JWToken");
+
+            var client = _httpClientFactory.CreateClient("GLMSApi");
+
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            await client.DeleteAsync(
+                $"api/servicerequests/{serviceRequestId}"
+            );
 
             return RedirectToAction(nameof(Index));
         }

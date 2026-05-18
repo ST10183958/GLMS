@@ -16,6 +16,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<Contract> Contracts => Set<Contract>();
 
     public DbSet<ServiceRequest> ServiceRequests => Set<ServiceRequest>();
+    
+    public DbSet<User> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
