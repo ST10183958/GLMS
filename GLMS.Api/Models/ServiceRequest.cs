@@ -6,7 +6,7 @@ namespace GLMS.Api.Models;
 
 public class ServiceRequest
 {
-    public int Id { get; set; }
+    public int ServiceRequestId { get; set; }
 
     [Required]
     public int ContractId { get; set; }

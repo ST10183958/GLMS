@@ -41,7 +41,7 @@ public class ServiceRequestsController : ControllerBase
     {
         var request = await _context.ServiceRequests
             .Include(s => s.Contract)
-            .FirstOrDefaultAsync(s => s.Id == id);
+            .FirstOrDefaultAsync(s => s.ServiceRequestId == id);
 
         if (request == null)
             return NotFound();
@@ -82,7 +82,7 @@ public class ServiceRequestsController : ControllerBase
 
         return CreatedAtAction(
             nameof(GetRequest),
-            new { id = request.Id },
+            new { id = request.ServiceRequestId },
             request);
     }
 

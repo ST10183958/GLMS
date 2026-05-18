@@ -1,6 +1,6 @@
-using GLMS.Web.Data;
+
 using GLMS.Web.Services;
-using Microsoft.EntityFrameworkCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,17 +9,39 @@ builder.Services.AddControllersWithViews();
 var connectionString =
     builder.Configuration.GetConnectionString("DefaultConnection");
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySql(
-        connectionString,
-        ServerVersion.AutoDetect(connectionString)
-    )
-);
+builder.Services.AddHttpClient("GLMSApi", client =>
+{
+    client.BaseAddress =
+        new Uri("http://localhost:5099/");
+});
+
+
+
 
 builder.Services.AddHttpClient<ICurrencyService, CurrencyService>();
 
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IContractRulesService, ContractRulesService>();
+
+builder.Services.AddScoped<
+    IContractsApiService,
+    ContractsApiService>();
+
+builder.Services.AddScoped<
+    IClientsApiService,
+    ClientsApiService>();
+
+builder.Services.AddScoped<
+    IClientsApiService,
+    ClientsApiService>();
+
+builder.Services.AddScoped<
+    IServiceRequestsApiService,
+    ServiceRequestsApiService>();
+
+builder.Services.AddScoped<
+    IContractsApiService,
+    ContractsApiService>();
 
 var app = builder.Build();
 
