@@ -13,11 +13,7 @@ namespace GLMS.Web.Controllers
         {
             _httpClientFactory = httpClientFactory;
         }
-
-        // =========================
-        // LOGIN
-        // =========================
-
+        
         [HttpGet]
         public IActionResult Login()
         {
@@ -112,10 +108,7 @@ namespace GLMS.Web.Controllers
                 return View(vm);
             }
         }
-
-        // =========================
-        // REGISTER
-        // =========================
+        
 
         [HttpGet]
         public IActionResult Register()
@@ -184,10 +177,7 @@ namespace GLMS.Web.Controllers
                 return View(vm);
             }
         }
-
-        // =========================
-        // LOGOUT
-        // =========================
+        
 
         public IActionResult Logout()
         {
@@ -198,10 +188,7 @@ namespace GLMS.Web.Controllers
                 "Auth"
             );
         }
-
-        // =========================
-        // ACCESS DENIED
-        // =========================
+        
 
         public IActionResult AccessDenied()
         {

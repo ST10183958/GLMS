@@ -15,9 +15,6 @@ namespace GLMS.Web.Controllers
             _httpClientFactory = httpClientFactory;
         }
 
-        // =========================
-        // INDEX
-        // =========================
 
         public async Task<IActionResult> Index()
         {
@@ -52,10 +49,6 @@ namespace GLMS.Web.Controllers
             return View(contracts);
         }
 
-        // =========================
-        // DETAILS
-        // =========================
-
         public async Task<IActionResult> Details(int id)
         {
             var token = HttpContext.Session.GetString("JWToken");
@@ -89,10 +82,6 @@ namespace GLMS.Web.Controllers
             return View(contract);
         }
 
-        // =========================
-        // CREATE GET
-        // =========================
-
         public IActionResult Create()
         {
             var token = HttpContext.Session.GetString("JWToken");
@@ -104,10 +93,7 @@ namespace GLMS.Web.Controllers
 
             return View();
         }
-
-        // =========================
-        // CREATE POST
-        // =========================
+        
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -155,10 +141,7 @@ namespace GLMS.Web.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
-        // =========================
-        // DELETE GET
-        // =========================
+        
 
         public async Task<IActionResult> Delete(int id)
         {
@@ -192,10 +175,7 @@ namespace GLMS.Web.Controllers
 
             return View(contract);
         }
-
-        // =========================
-        // DELETE POST
-        // =========================
+        
 
         [HttpPost]
         [ValidateAntiForgeryToken]

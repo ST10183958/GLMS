@@ -14,11 +14,7 @@ namespace GLMS.Web.Controllers
         {
             _httpClientFactory = httpClientFactory;
         }
-
-        // =========================
-        // INDEX
-        // =========================
-
+        
         public async Task<IActionResult> Index()
         {
             var token = HttpContext.Session.GetString("JWToken");
@@ -55,18 +51,10 @@ namespace GLMS.Web.Controllers
             return View(requests);
         }
 
-        // =========================
-        // CREATE GET
-        // =========================
-
         public IActionResult Create()
         {
             return View();
         }
-
-        // =========================
-        // CREATE POST
-        // =========================
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -106,10 +94,7 @@ namespace GLMS.Web.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
-        // =========================
-        // DELETE
-        // =========================
+        
 
         public async Task<IActionResult> Delete(int id)
         {

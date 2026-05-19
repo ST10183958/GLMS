@@ -25,11 +25,7 @@ namespace GLMS.Api.Controllers
             _context = context;
             _configuration = configuration;
         }
-
-        // =========================
-        // REGISTER
-        // =========================
-
+        
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
@@ -62,10 +58,7 @@ namespace GLMS.Api.Controllers
                 message = "Registration successful"
             });
         }
-
-        // =========================
-        // LOGIN
-        // =========================
+        
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto dto)
