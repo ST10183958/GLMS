@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GLMS.Web.Controllers
 {
+    
     public class AuthController : Controller
     {
         private readonly IHttpClientFactory _httpClientFactory;

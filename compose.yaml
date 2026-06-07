@@ -1,0 +1,83 @@
+﻿services:
+
+
+  sql-server-db:
+    image: mysql:8.0
+
+    container_name: sql-server-db
+
+    restart: always
+
+    environment:
+      MYSQL_ROOT_PASSWORD: StrongPassword123!
+      MYSQL_DATABASE: GLMS_DB
+
+    ports:
+      - "3307:3306"
+
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+    networks:
+      - glms-network
+
+
+  glms.api:
+    image: glms.api
+
+    build:
+      context: .
+      dockerfile: GLMS.Api/Dockerfile
+
+    container_name: glms-back-api
+
+    restart: always
+
+    depends_on:
+      - sql-server-db
+
+    environment:
+      ConnectionStrings__DefaultConnection: "server=sql-server-db;port=3306;database=GLMS_DB;user=root;password=StrongPassword123!"
+
+      Jwt__Key: "THIS_IS_A_SUPER_SECRET_GLMS_KEY_12345"
+
+      ASPNETCORE_URLS: "http://+:8080"
+
+    ports:
+      - "5000:8080"
+
+    networks:
+      - glms-network
+
+
+  glms:
+    image: glms
+
+    build:
+      context: .
+      dockerfile: GLMS/Dockerfile
+
+    container_name: glms-front-web
+
+    restart: always
+
+    depends_on:
+      - glms.api
+
+    environment:
+      ApiSettings__BaseUrl: "http://glms.api:8080/"
+
+      ASPNETCORE_URLS: "http://+:8080"
+
+    ports:
+      - "8080:8080"
+
+    networks:
+      - glms-network
+
+networks:
+  glms-network:
+
+
+volumes:
+  mysql_data:

@@ -1,75 +1,125 @@
-﻿using System.Net.Http.Headers;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
+using GLMS.Models;
 using GLMS.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace GLMS.Web.Controllers
+namespace GLMS.Controllers
 {
     public class ClientsController : Controller
     {
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _configuration;
 
-        public ClientsController(IHttpClientFactory httpClientFactory)
+        public ClientsController(
+            IHttpClientFactory factory,
+            IConfiguration configuration)
         {
-            _httpClientFactory = httpClientFactory;
+            _httpClient = factory.CreateClient();
+
+            _configuration = configuration;
+
+            _httpClient.BaseAddress =
+                new Uri(_configuration["ApiSettings:BaseUrl"]!);
         }
+
+        // =========================================
+        // GET CLIENTS
+        // =========================================
 
         public async Task<IActionResult> Index()
         {
-            var token = HttpContext.Session.GetString("JWToken");
+            var response =
+                await _httpClient.GetAsync("api/clients");
 
-            if (string.IsNullOrWhiteSpace(token))
+            if (!response.IsSuccessStatusCode)
             {
-                return RedirectToAction("Login", "Auth");
+                return View(new List<Client>());
             }
 
-            var client = _httpClientFactory.CreateClient("GLMSApi");
+            var json =
+                await response.Content.ReadAsStringAsync();
 
-            client.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", token);
-
-            var response = await client.GetAsync("api/clients");
-
-            var json = await response.Content.ReadAsStringAsync();
-
-            var clients = JsonSerializer.Deserialize<List<Client>>(
-                json,
-                new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
+            var clients =
+                JsonSerializer.Deserialize<List<Client>>(
+                    json,
+                    new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
 
             return View(clients);
         }
+
+        // =========================================
+        // CREATE PAGE
+        // =========================================
 
         public IActionResult Create()
         {
             return View();
         }
 
+        // =========================================
+        // CREATE CLIENT
+        // =========================================
+
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Client model)
+        public async Task<IActionResult> Create(Client client)
         {
-            var token = HttpContext.Session.GetString("JWToken");
+            var json =
+                JsonSerializer.Serialize(client);
 
-            var client = _httpClientFactory.CreateClient("GLMSApi");
+            var content =
+                new StringContent(
+                    json,
+                    Encoding.UTF8,
+                    "application/json");
 
-            client.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", token);
+            var response =
+                await _httpClient.PostAsync(
+                    "api/clients",
+                    content);
 
-            var json = JsonSerializer.Serialize(model);
+            if (!response.IsSuccessStatusCode)
+            {
+                ModelState.AddModelError(
+                    "",
+                    "Failed to create client.");
 
-            var content = new StringContent(
-                json,
-                Encoding.UTF8,
-                "application/json"
-            );
-
-            await client.PostAsync("api/clients", content);
+                return View(client);
+            }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        // =========================================
+        // DETAILS
+        // =========================================
+
+        public async Task<IActionResult> Details(int id)
+        {
+            var response =
+                await _httpClient.GetAsync(
+                    $"api/clients/{id}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return NotFound();
+            }
+
+            var json =
+                await response.Content.ReadAsStringAsync();
+
+            var client =
+                JsonSerializer.Deserialize<Client>(
+                    json,
+                    new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+
+            return View(client);
         }
     }
 }

@@ -51,6 +51,14 @@ builder.Services.AddScoped<
     IContractsApiService,
     ContractsApiService>();
 
+builder.Services.AddHttpClient();
+
+builder.Services.AddDistributedMemoryCache();
+
+builder.Services.AddSession();
+
+builder.Services.AddHttpContextAccessor();
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

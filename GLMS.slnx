@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="compose.yaml" />
+  </Folder>
   <Project Path="GLMS.Api/GLMS.Api.csproj" />
   <Project Path="GLMS.IntegrationTests/GLMS.IntegrationTests.csproj" />
   <Project Path="GLMS.Tests/GLMS.Tests.csproj" Id="71f4c906-5d39-48d7-9865-e35a763bab7a" />
