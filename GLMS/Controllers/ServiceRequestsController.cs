@@ -1,98 +1,137 @@
 using System.Text;
 using System.Text.Json;
-using GLMS.Models;
 using GLMS.Web.Models;
+using GLMS.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace GLMS.Controllers
+namespace GLMS.Controllers;
+
+public class ServiceRequestsController : Controller
 {
-    public class ServiceRequestsController : Controller
+    private readonly HttpClient _httpClient;
+    private readonly IConfiguration _configuration;
+
+    public ServiceRequestsController(
+        IHttpClientFactory factory,
+        IConfiguration configuration)
     {
-        private readonly HttpClient _httpClient;
-        private readonly IConfiguration _configuration;
+        _httpClient = factory.CreateClient();
+        _configuration = configuration;
 
-        public ServiceRequestsController(
-            IHttpClientFactory factory,
-            IConfiguration configuration)
+        _httpClient.BaseAddress =
+            new Uri(_configuration["ApiSettings:BaseUrl"]!);
+    }
+
+    public async Task<IActionResult> Index()
+    {
+        var response =
+            await _httpClient.GetAsync("api/servicerequests");
+
+        if (!response.IsSuccessStatusCode)
+            return View(new List<ServiceRequest>());
+
+        var json =
+            await response.Content.ReadAsStringAsync();
+
+        var requests =
+            JsonSerializer.Deserialize<List<ServiceRequest>>(
+                json,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+        return View(requests);
+    }
+
+    public async Task<IActionResult> Create()
+    {
+        var vm = new ServiceRequestCreateViewModel
         {
-            _httpClient = factory.CreateClient();
+            Contracts = await LoadContracts()
+        };
 
-            _configuration = configuration;
+        return View(vm);
+    }
 
-            _httpClient.BaseAddress =
-                new Uri(_configuration["ApiSettings:BaseUrl"]!);
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(
+        ServiceRequestCreateViewModel vm)
+    {
+        if (!ModelState.IsValid)
+        {
+            vm.Contracts = await LoadContracts();
+            return View(vm);
         }
 
-        // =========================================
-        // GET ALL
-        // =========================================
-
-        public async Task<IActionResult> Index()
+        var request = new ServiceRequest
         {
-            var response =
-                await _httpClient.GetAsync(
-                    "api/servicerequests");
+            ContractId = vm.ContractId,
+            Description = vm.Description,
+            CostUsd = vm.CostUsd,
+            Status = vm.Status
+        };
 
-            if (!response.IsSuccessStatusCode)
-            {
-                return View(new List<ServiceRequest>());
-            }
+        var json =
+            JsonSerializer.Serialize(request);
 
-            var json =
+        var content =
+            new StringContent(
+                json,
+                Encoding.UTF8,
+                "application/json");
+
+        var response =
+            await _httpClient.PostAsync(
+                "api/servicerequests",
+                content);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var error =
                 await response.Content.ReadAsStringAsync();
 
-            var requests =
-                JsonSerializer.Deserialize<List<ServiceRequest>>(
-                    json,
-                    new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    });
+            ModelState.AddModelError(
+                "",
+                error);
 
-            return View(requests);
+            vm.Contracts = await LoadContracts();
+
+            return View(vm);
         }
 
-        // =========================================
-        // CREATE PAGE
-        // =========================================
+        return RedirectToAction(nameof(Index));
+    }
 
-        public IActionResult Create()
-        {
-            return View();
-        }
+    private async Task<List<SelectListItem>> LoadContracts()
+    {
+        var response =
+            await _httpClient.GetAsync("api/contracts");
 
-        // =========================================
-        // CREATE
-        // =========================================
+        if (!response.IsSuccessStatusCode)
+            return new List<SelectListItem>();
 
-        [HttpPost]
-        public async Task<IActionResult> Create(
-            ServiceRequest request)
-        {
-            var json =
-                JsonSerializer.Serialize(request);
+        var json =
+            await response.Content.ReadAsStringAsync();
 
-            var content =
-                new StringContent(
-                    json,
-                    Encoding.UTF8,
-                    "application/json");
+        var contracts =
+            JsonSerializer.Deserialize<List<Contract>>(
+                json,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
 
-            var response =
-                await _httpClient.PostAsync(
-                    "api/servicerequests",
-                    content);
-
-            if (!response.IsSuccessStatusCode)
+        return contracts?
+            .Select(c => new SelectListItem
             {
-                ModelState.AddModelError(
-                    "",
-                    "Failed to create service request.");
-
-                return View(request);
-            }
-
-            return RedirectToAction(nameof(Index));
-        }
+                Value = c.ContractId.ToString(),
+                Text =
+                    $"Contract #{c.ContractId} - {c.Client?.Name}"
+            })
+            .ToList()
+            ?? new List<SelectListItem>();
     }
 }

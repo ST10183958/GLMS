@@ -16,7 +16,7 @@ public class ClientsController : ControllerBase
         _context = context;
     }
 
-    // GET: api/clients
+
     [HttpGet]
     public async Task<IActionResult> GetClients()
     {
@@ -27,7 +27,7 @@ public class ClientsController : ControllerBase
         return Ok(clients);
     }
 
-    // GET: api/clients/5
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetClient(int id)
     {
@@ -41,7 +41,6 @@ public class ClientsController : ControllerBase
         return Ok(client);
     }
 
-    // POST: api/clients
     [HttpPost]
     public async Task<IActionResult> CreateClient([FromBody] Client client)
     {
@@ -55,7 +54,7 @@ public class ClientsController : ControllerBase
             client);
     }
 
-    // PUT: api/clients/5
+
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateClient(int id, [FromBody] Client client)
     {
@@ -76,7 +75,7 @@ public class ClientsController : ControllerBase
         return NoContent();
     }
 
-    // DELETE: api/clients/5
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteClient(int id)
     {

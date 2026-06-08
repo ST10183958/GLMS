@@ -16,7 +16,7 @@ public class ContractsController : ControllerBase
         _context = context;
     }
 
-    // GET: api/contracts
+
     [HttpGet]
     public async Task<IActionResult> GetContracts(
         DateTime? startDate,
@@ -41,7 +41,7 @@ public class ContractsController : ControllerBase
         return Ok(contracts);
     }
 
-    // POST: api/contracts
+
     [HttpPost]
     public async Task<IActionResult> CreateContract([FromBody] Contract contract)
     {
@@ -55,7 +55,7 @@ public class ContractsController : ControllerBase
             contract);
     }
 
-    // GET: api/contracts/5
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetContractById(int id)
     {
@@ -69,7 +69,6 @@ public class ContractsController : ControllerBase
         return Ok(contract);
     }
 
-    // PATCH: api/contracts/5/status
     [HttpPatch("{id}/status")]
     public async Task<IActionResult> UpdateStatus(
         int id,
@@ -88,7 +87,7 @@ public class ContractsController : ControllerBase
         return NoContent();
     }
 
-    // DELETE: api/contracts/5
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteContract(int id)
     {

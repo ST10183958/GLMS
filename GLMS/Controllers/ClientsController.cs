@@ -22,10 +22,7 @@ namespace GLMS.Controllers
             _httpClient.BaseAddress =
                 new Uri(_configuration["ApiSettings:BaseUrl"]!);
         }
-
-        // =========================================
-        // GET CLIENTS
-        // =========================================
+        
 
         public async Task<IActionResult> Index()
         {
@@ -50,20 +47,13 @@ namespace GLMS.Controllers
 
             return View(clients);
         }
-
-        // =========================================
-        // CREATE PAGE
-        // =========================================
+        
 
         public IActionResult Create()
         {
             return View();
         }
-
-        // =========================================
-        // CREATE CLIENT
-        // =========================================
-
+        
         [HttpPost]
         public async Task<IActionResult> Create(Client client)
         {
@@ -92,11 +82,7 @@ namespace GLMS.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
-        // =========================================
-        // DETAILS
-        // =========================================
-
+        
         public async Task<IActionResult> Details(int id)
         {
             var response =

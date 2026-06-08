@@ -24,7 +24,7 @@ public class ServiceRequestsController : ControllerBase
         _contractRulesService = contractRulesService;
     }
 
-    // GET: api/servicerequests
+ 
     [HttpGet]
     public async Task<IActionResult> GetRequests()
     {
@@ -35,7 +35,7 @@ public class ServiceRequestsController : ControllerBase
         return Ok(requests);
     }
 
-    // GET: api/servicerequests/5
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetRequest(int id)
     {
@@ -49,7 +49,7 @@ public class ServiceRequestsController : ControllerBase
         return Ok(request);
     }
 
-    // POST: api/servicerequests
+
     [HttpPost]
     public async Task<IActionResult> CreateRequest(
         [FromBody] ServiceRequest request)
@@ -86,7 +86,7 @@ public class ServiceRequestsController : ControllerBase
             request);
     }
 
-    // DELETE: api/servicerequests/5
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteRequest(int id)
     {

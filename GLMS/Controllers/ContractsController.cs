@@ -2,8 +2,11 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using GLMS.Models;
+using GLMS.Web.Enums;
 using GLMS.Web.Models;
+using GLMS.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace GLMS.Controllers
 {
@@ -22,10 +25,6 @@ namespace GLMS.Controllers
             _httpClient.BaseAddress =
                 new Uri(_configuration["ApiSettings:BaseUrl"]!);
         }
-
-        // =========================================
-        // GET ALL CONTRACTS
-        // =========================================
 
         public async Task<IActionResult> Index(
             string? status,
@@ -57,27 +56,48 @@ namespace GLMS.Controllers
 
             return View(contracts);
         }
+        
 
-        // =========================================
-        // CREATE PAGE
-        // =========================================
-
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View();
+            var vm = new ContractCreateViewModel
+            {
+                Clients = await LoadClients()
+            };
+
+            return View(vm);
         }
-
-        // =========================================
-        // CREATE CONTRACT
-        // =========================================
-
+        
         [HttpPost]
-        public async Task<IActionResult> Create(Contract contract)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(
+            ContractCreateViewModel vm)
         {
-            var token = HttpContext.Session.GetString("JWToken");
+            if (!ModelState.IsValid)
+            {
+                vm.Clients = await LoadClients();
+                return View(vm);
+            }
 
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", token);
+            var token =
+                HttpContext.Session.GetString("JWToken");
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue(
+                        "Bearer",
+                        token);
+            }
+
+            var contract = new Contract
+            {
+                ClientId = vm.ClientId,
+                StartDate = vm.StartDate,
+                EndDate = vm.EndDate,
+                ServiceLevel = vm.ServiceLevel,
+                Status = Enum.Parse<ContractStatus>(vm.Status)
+            };
 
             var json =
                 JsonSerializer.Serialize(contract);
@@ -99,15 +119,13 @@ namespace GLMS.Controllers
                     "",
                     "Failed to create contract.");
 
-                return View(contract);
+                vm.Clients = await LoadClients();
+
+                return View(vm);
             }
 
             return RedirectToAction(nameof(Index));
         }
-
-        // =========================================
-        // DETAILS
-        // =========================================
 
         public async Task<IActionResult> Details(int id)
         {
@@ -133,11 +151,6 @@ namespace GLMS.Controllers
 
             return View(contract);
         }
-
-        // =========================================
-        // DELETE PAGE
-        // =========================================
-
         public async Task<IActionResult> Delete(int id)
         {
             var response =
@@ -163,23 +176,59 @@ namespace GLMS.Controllers
             return View(contract);
         }
 
-        // =========================================
-        // DELETE CONFIRMED
-        // =========================================
-
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var token = HttpContext.Session.GetString("JWToken");
+            var token =
+                HttpContext.Session.GetString("JWToken");
 
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", token);
+            if (!string.IsNullOrEmpty(token))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue(
+                        "Bearer",
+                        token);
+            }
 
-            var response =
-                await _httpClient.DeleteAsync(
-                    $"api/contracts/{id}");
+            await _httpClient.DeleteAsync(
+                $"api/contracts/{id}");
 
             return RedirectToAction(nameof(Index));
+        }
+
+
+
+        private async Task<List<SelectListItem>> LoadClients()
+        {
+            var response =
+                await _httpClient.GetAsync(
+                    "api/clients");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return new List<SelectListItem>();
+            }
+
+            var json =
+                await response.Content.ReadAsStringAsync();
+
+            var clients =
+                JsonSerializer.Deserialize<List<Client>>(
+                    json,
+                    new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+
+            return clients?
+                .Select(c => new SelectListItem
+                {
+                    Value = c.ClientId.ToString(),
+                    Text = c.Name
+                })
+                .ToList()
+                ?? new List<SelectListItem>();
         }
     }
 }

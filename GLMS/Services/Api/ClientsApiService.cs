@@ -12,8 +12,7 @@ namespace GLMS.Web.Services
         {
             _httpClient = factory.CreateClient("GLMSApi");
 
-            // OPTIONAL JWT TOKEN
-            // Replace with actual token retrieval later
+
             var token = "YOUR_JWT_TOKEN";
 
             _httpClient.DefaultRequestHeaders.Authorization =
@@ -23,7 +22,7 @@ namespace GLMS.Web.Services
                 );
         }
 
-        // GET ALL CLIENTS
+   
         public async Task<List<Client>> GetClientsAsync()
         {
             var clients =
@@ -34,7 +33,6 @@ namespace GLMS.Web.Services
             return clients ?? new List<Client>();
         }
 
-        // GET CLIENT BY ID
         public async Task<Client?> GetClientByIdAsync(int id)
         {
             return await _httpClient.GetFromJsonAsync<Client>(
@@ -42,7 +40,7 @@ namespace GLMS.Web.Services
             );
         }
 
-        // CREATE CLIENT
+   
         public async Task CreateClientAsync(Client client)
         {
             var response =
@@ -54,7 +52,6 @@ namespace GLMS.Web.Services
             response.EnsureSuccessStatusCode();
         }
 
-        // UPDATE CLIENT
         public async Task UpdateClientAsync(int id, Client client)
         {
             var response =
@@ -65,8 +62,7 @@ namespace GLMS.Web.Services
 
             response.EnsureSuccessStatusCode();
         }
-
-        // DELETE CLIENT
+        
         public async Task DeleteClientAsync(int id)
         {
             var response =

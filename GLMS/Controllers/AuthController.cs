@@ -157,7 +157,7 @@ namespace GLMS.Web.Controllers
 
                     ModelState.AddModelError(
                         "",
-                        $"Registration failed: {error}"
+                        $"Status: {(int)response.StatusCode} ({response.StatusCode}) | {error}"
                     );
 
                     return View(vm);

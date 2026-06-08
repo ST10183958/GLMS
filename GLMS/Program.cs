@@ -12,7 +12,7 @@ var connectionString =
 builder.Services.AddHttpClient("GLMSApi", client =>
 {
     client.BaseAddress =
-        new Uri("http://localhost:5099/");
+        new Uri("http://glms-back-api:8080/");
 });
 
 
